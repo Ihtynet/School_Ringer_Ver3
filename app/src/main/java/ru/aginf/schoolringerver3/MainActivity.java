@@ -47,36 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         listRaspUrokov.setAdapter(adapter);
 
-
-
-        listRaspUrokov.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-                MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_12H)
-                        .setHour(9)
-                        .setMinute(0)
-                        .setTitleText("Задайте время урока")
-                        .build();
-
-                materialTimePicker.addOnPositiveButtonClickListener(viewpic -> {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(calendar.SECOND,0);
-                    calendar.set(calendar.MILLISECOND,0);
-                    calendar.set(calendar.MINUTE, materialTimePicker.getMinute());
-                    calendar.set(calendar.HOUR_OF_DAY, materialTimePicker.getHour());
-                    Toast.makeText(getApplicationContext(), "Звонок установлен:  <"+id+"> "+materialTimePicker.getHour()+":"+materialTimePicker.getMinute(), Toast.LENGTH_SHORT).show();
-
-                    String txtTime = materialTimePicker.getHour()+":"+materialTimePicker.getMinute();
-                    names[(int) id] = txtTime;
-                    ((TextView)view).setText(txtTime);
-                });
-                materialTimePicker.show(getSupportFragmentManager(),"tag_picker");
-
-
-            }
-        });
     }
 
     @Override
@@ -85,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
     }
+
     @Override
     public boolean onContextItemSelected (MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -99,26 +70,56 @@ public class MainActivity extends AppCompatActivity {
                 return super.onContextItemSelected(item);
         }
     }
+
     public void editZv(int id){
+
+
+        String strTime = (String) arrayMainList.get(id);
+
+        int[] parInt = getDateTimeFronStr(strTime);
+        Toast.makeText(this,"h = "+parInt[0] + " m = "+parInt[1], Toast.LENGTH_SHORT).show();
+
+
+        MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setHour(parInt[0])
+                .setMinute(parInt[1])
+                .setTitleText("Задайте время урока")
+                .build();
+
+        materialTimePicker.addOnPositiveButtonClickListener(viewpic -> {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(calendar.SECOND,0);
+            calendar.set(calendar.MILLISECOND,0);
+            calendar.set(calendar.MINUTE, materialTimePicker.getMinute());
+            calendar.set(calendar.HOUR_OF_DAY, materialTimePicker.getHour());
+            Toast.makeText(getApplicationContext(), "Звонок установлен:  <"+id+"> "+materialTimePicker.getHour()+":"+materialTimePicker.getMinute(), Toast.LENGTH_SHORT).show();
+
+            String txtTime = materialTimePicker.getHour()+":"+materialTimePicker.getMinute();
+            arrayMainList.set(id,  txtTime);
+            adapter.notifyDataSetChanged();
+        });
+        materialTimePicker.show(getSupportFragmentManager(),"tag_picker");
 
     }
 
     public void deleteZv(int id){
-
+        arrayMainList.remove(id);
+        adapter.notifyDataSetChanged();
     }
+
     public void setZvonki(String str) {
-        //AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager;
         int id = -1;
-        for (String val : names) {
+        for (Object val : arrayMainList) {
             id++;
             PendingIntent pi = getAlarmInfoPendingIntent(id);
             pi.cancel();
 
-            if (val == "")
+            if (val.toString() == "")
                 continue;
 
-            int hTime = getHoureFromText(val);
-            int mTime = getMinuteFromText(val);
+            int hTime = getHoureFromText(val.toString());
+            int mTime = getMinuteFromText(val.toString());
             Calendar calendar = Calendar.getInstance();
             calendar.set(calendar.SECOND,0);
             calendar.set(calendar.MILLISECOND,0);
@@ -149,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
             String txtTime = materialTimePicker.getHour()+":"+materialTimePicker.getMinute();
             arrayMainList.add(txtTime);
             adapter.notifyDataSetChanged();
-            //((TextView)view).setText(txtTime);
         });
         materialTimePicker.show(getSupportFragmentManager(),"tag_picker");
 
@@ -208,9 +208,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void load() {
-        //names= new String[];
+    public  int[] getDateTimeFronStr(String strTime) {
+        int[] res = {getHoureFromText(strTime),getMinuteFromText(strTime)};
+        return res;
+    }
 
+
+    public void load() {
         mSharedPref = getPreferences(MODE_PRIVATE);
         int countZv = Integer.parseInt(mSharedPref.getString("countZv", ""));
         for (int k=0; k < countZv; k++) {
