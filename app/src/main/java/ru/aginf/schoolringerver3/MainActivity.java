@@ -7,6 +7,9 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ListView listRaspUrokov = (ListView) findViewById(R.id.listRaspUrokov);
-
+        registerForContextMenu(listRaspUrokov);
 
         adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, arrayMainList);
@@ -76,6 +79,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+    }
+    @Override
+    public boolean onContextItemSelected (MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()){
+            case R.id.edit:
+                editZv(info.position);
+                return true;
+            case R.id.delete:
+                deleteZv(info.position);
+                return  true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+    public void editZv(int id){
+
+    }
+
+    public void deleteZv(int id){
+
+    }
     public void setZvonki(String str) {
         //AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager;
         int id = -1;

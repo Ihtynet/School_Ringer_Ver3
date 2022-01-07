@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">School Ringer (ver 3)</string>
+    <string name="delete">Удалить</string>
+    <string name="edit">Редактировать</string>
 </resources>
