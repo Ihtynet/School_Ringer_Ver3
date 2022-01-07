@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     ArrayList arrayMainList = new ArrayList();
     ArrayAdapter<String> adapter;
 
+    ///////////////////////////////////////////////
+    // ON_CREATE
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
         listRaspUrokov.setAdapter(adapter);
 
     }
+
+    /////////////////////////////////////////
+    // ОБРАБОТКИ КОНТЕКСТНОГО МЕНЮ LISTVIEW
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -108,6 +114,9 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
+    ////////////////////////////////////////////////////
+    // ОБРАБОТКИ СО ЗВОНКАМИ
+
     public void setZvonki(String str) {
         int id = -1;
         for (Object val : arrayMainList) {
@@ -162,6 +171,9 @@ public class MainActivity extends AppCompatActivity {
         return PendingIntent.getActivity(this, id, alarmInfoIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    ////////////////////////////////////////////////////////////
+    // ОБРАБОТКИ С ДАТОЙ
+
     public String setDefaultVal(String str) {
         if(str==null||str.equals("")){
             return "00:00";
@@ -213,6 +225,8 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
+    /////////////////////////////////////////////////////////////////////////////
+    // ЗАГРУЗКА И СОХРАНЕНИЕ ДАННЫХ
 
     public void load() {
         mSharedPref = getPreferences(MODE_PRIVATE);
@@ -220,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
         for (int k=0; k < countZv; k++) {
 
         }
-
 
     }
 
