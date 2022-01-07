@@ -22,6 +22,7 @@ import com.google.android.material.timepicker.TimeFormat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
             "10:40", "11:20", "11:30", "12:10", "12:30", "13.10", "13:20", "14:00", "14:10", "14:50","15:00","15:40"};
 
     ArrayList arrayMainList = new ArrayList();
+    ArrayList arrayUidList  = new ArrayList();
     ArrayAdapter<String> adapter;
 
     ///////////////////////////////////////////////
@@ -103,6 +105,10 @@ public class MainActivity extends AppCompatActivity {
 
             String txtTime = materialTimePicker.getHour()+":"+materialTimePicker.getMinute();
             arrayMainList.set(id,  txtTime);
+            int uidZv = (int) arrayUidList.get(id);
+            PendingIntent pi = getAlarmInfoPendingIntent(uidZv);
+            AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(), pi);
+
             adapter.notifyDataSetChanged();
         });
         materialTimePicker.show(getSupportFragmentManager(),"tag_picker");
@@ -110,7 +116,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void deleteZv(int id){
+
+        int uidZv = (int) arrayUidList.get(id);
+        PendingIntent pi = getAlarmInfoPendingIntent(uidZv);
+        pi.cancel();
+
         arrayMainList.remove(id);
+        arrayUidList.remove(id);
         adapter.notifyDataSetChanged();
     }
 
@@ -121,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
         int id = -1;
         for (Object val : arrayMainList) {
             id++;
-            PendingIntent pi = getAlarmInfoPendingIntent(id);
+            int uidZv = (int) arrayUidList.get(id);
+            PendingIntent pi = getAlarmInfoPendingIntent(uidZv);
             pi.cancel();
 
             if (val.toString() == "")
@@ -135,14 +148,14 @@ public class MainActivity extends AppCompatActivity {
             calendar.set(calendar.MINUTE, mTime);
             calendar.set(calendar.HOUR_OF_DAY, hTime);
 
-            pi = getAlarmInfoPendingIntent(id);
+            pi = getAlarmInfoPendingIntent(uidZv);
             AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(), pi);
         }
     }
 
     public void onNewZv(View view){
         MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
-                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setTimeFormat(TimeFormat.CLOCK_24H)
                 .setHour(9)
                 .setMinute(0)
                 .setTitleText("Задайте время урока")
@@ -158,6 +171,14 @@ public class MainActivity extends AppCompatActivity {
 
             String txtTime = materialTimePicker.getHour()+":"+materialTimePicker.getMinute();
             arrayMainList.add(txtTime);
+            Date date = new Date();
+
+            int uidZv = (int) date.getTime();
+            arrayUidList.add(uidZv);
+
+            PendingIntent pi = getAlarmInfoPendingIntent(uidZv);
+            AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(), pi);
+
             adapter.notifyDataSetChanged();
         });
         materialTimePicker.show(getSupportFragmentManager(),"tag_picker");
